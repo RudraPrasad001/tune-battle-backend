@@ -5,6 +5,7 @@ const axios = require("axios");
 require("dotenv").config();
 const SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token";
 const SPOTIFY_PLAYLIST_URL = "https://api.spotify.com/v1/playlists/";
+let count=0;
 const getSpotifyAccessToken = asyncHandler(async () => {
     try {
         const response = await axios.post(
@@ -44,24 +45,25 @@ const getSongs = asyncHandler(async (req, res) => {
         });
 
         console.log("Playlist Data:", response.data);
-
+        
         const tracks = response.data.items.map((item) => ({
             name: item.track.name,
             artist: item.track.artists.map((artist) => artist.name).join(", "),
             spotify_url: item.track.external_urls.spotify 
         }));
-
+         count = tracks.length;
         try {
             console.log("Tracks Extracted:", JSON.stringify(tracks, null, 2));
             console.log("Raw Playlist Data:", JSON.stringify(response.data, null, 2));
 
             const savedSongs = await createSong(tracks);
             console.log("Songs Saved in DB:", savedSongs);
+            console.log(count);
         } catch (e) {
             console.log(e);
             console.log("nah lil bro");
         }
-
+        
         res.status(200).json(tracks);
 
     } catch (error) {
