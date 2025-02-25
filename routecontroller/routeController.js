@@ -33,9 +33,9 @@ const getSongs = asyncHandler(async (req, res) => {
     const playlistId = req.params.id;
     console.log(playlistId);
     const accessToken = await getSpotifyAccessToken();
-    
+
     if (!accessToken) {
-        return res.status(500).json({ error: " Failed to get access token" });
+        return res.status(500).json({ error: "Failed to get access token" });
     }
 
     try {
@@ -43,26 +43,32 @@ const getSongs = asyncHandler(async (req, res) => {
             headers: { Authorization: `Bearer ${accessToken}` },
         });
 
-        console.log("Playlist Data:", response.data); 
+        console.log("Playlist Data:", response.data);
 
         const tracks = response.data.items.map((item) => ({
             name: item.track.name,
             artist: item.track.artists.map((artist) => artist.name).join(", "),
+            spotify_url: item.track.external_urls.spotify 
         }));
-        try{
-        console.log("Tracks Extracted:", JSON.stringify(tracks, null, 2));
-        const savedSongs = await createSong(tracks);
-        console.log("Songs Saved in DB:", savedSongs);}
-        catch(e){
+
+        try {
+            console.log("Tracks Extracted:", JSON.stringify(tracks, null, 2));
+            console.log("Raw Playlist Data:", JSON.stringify(response.data, null, 2));
+
+            const savedSongs = await createSong(tracks);
+            console.log("Songs Saved in DB:", savedSongs);
+        } catch (e) {
             console.log(e);
             console.log("nah lil bro");
         }
+
         res.status(200).json(tracks);
 
     } catch (error) {
-        console.error(" Error fetching playlist:", error.response?.data || error.message);
-        res.status(500).json({ error: " Failed to fetch playlist", details: error.response?.data });
+        console.error("Error fetching playlist:", error.response?.data || error.message);
+        res.status(500).json({ error: "Failed to fetch playlist", details: error.response?.data });
     }
 });
+
 
 module.exports={getSongs};

@@ -7,6 +7,10 @@ const contactSchema=mongoose.Schema({
     artist:{
         type:String,
         required:[true,"Please provide the artist"]
+    },
+    spotify_url:{
+        type:String,
+        required:[true,"Please provide a valid  link"]
     }
 },
 {
