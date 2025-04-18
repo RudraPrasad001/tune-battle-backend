@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
 const Song = require('../schema/songs');
+const connectDb =require('./dbConnection/connect');
 let count = 0;
 const createSongs = asyncHandler(async (req, res) => {
     try {
@@ -8,12 +9,7 @@ const createSongs = asyncHandler(async (req, res) => {
         if (!Array.isArray(users)) {
             return res.status(400).json({ error: "Invalid data format, expected an array" });
         }
-        
-        await Song.deleteMany({});
-        console.log("Cleared the songs");
-
-        await Song.deleteMany({});
-        console.log("Cleared the songs");
+        connectDb();
         
         const songs = await Promise.all(users.map(async ({ name, artist,spotify_url }) => {
             return await Song.create({ name, artist,spotify_url });
@@ -27,7 +23,10 @@ const createSongs = asyncHandler(async (req, res) => {
 });
 const createSong = async (tracks) => {
     try {
-        console.log("Received in createSong:", JSON.stringify(tracks, null, 2));
+        console.log("Received in createSong:");
+
+        
+        connectDb();
 
         if (!Array.isArray(tracks) || tracks.length === 0) {
             console.error("Error: createSong received invalid data.");
