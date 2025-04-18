@@ -1,7 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
 const Song = require('../schema/songs');
-const connectDb =require('./dbConnection/connect');
+const connectDb =require('../dbConnection/connect.js');
 let count = 0;
 const createSongs = asyncHandler(async (req, res) => {
     try {
