@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Song = require('../schema/songs');
+const connectDb =require('./dbConnection/connect');
 let count = 0;
 const createSongs = asyncHandler(async (req, res) => {
     try {
@@ -7,8 +8,7 @@ const createSongs = asyncHandler(async (req, res) => {
         if (!Array.isArray(users)) {
             return res.status(400).json({ error: "Invalid data format, expected an array" });
         }
-
-        await Song.deleteMany({});
+        connectDb();
         console.log("Cleared the songs");
 
         const songs = await Promise.all(users.map(async ({ name, artist,spotify_url }) => {
@@ -23,9 +23,9 @@ const createSongs = asyncHandler(async (req, res) => {
 });
 const createSong = async (tracks) => {
     try {
-        console.log("Received in createSong:", JSON.stringify(tracks, null, 2));
+        console.log("Received in createSong:");
         
-        await Song.deleteMany({});
+        connectDb();
         console.log("Cleared the songs");
         
         if (!Array.isArray(tracks) || tracks.length === 0) {
