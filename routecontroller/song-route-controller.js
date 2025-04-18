@@ -1,4 +1,5 @@
 const asyncHandler = require("express-async-handler");
+const mongoose = require("mongoose");
 const Song = require('../schema/songs');
 let count = 0;
 const createSongs = asyncHandler(async (req, res) => {
@@ -7,6 +8,9 @@ const createSongs = asyncHandler(async (req, res) => {
         if (!Array.isArray(users)) {
             return res.status(400).json({ error: "Invalid data format, expected an array" });
         }
+        
+        await mongoose.connection.collections.contacts.drop();
+        console.log("Cleared the songs");
 
         const songs = await Promise.all(users.map(async ({ name, artist,spotify_url }) => {
             return await Song.create({ name, artist,spotify_url });
