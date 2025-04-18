@@ -9,7 +9,7 @@ const createSongs = asyncHandler(async (req, res) => {
             return res.status(400).json({ error: "Invalid data format, expected an array" });
         }
         
-        await mongoose.connection.collections.contacts.drop();
+        await Song.deleteMany({});
         console.log("Cleared the songs");
 
         const songs = await Promise.all(users.map(async ({ name, artist,spotify_url }) => {
