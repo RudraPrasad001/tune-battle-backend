@@ -12,6 +12,9 @@ const createSongs = asyncHandler(async (req, res) => {
         await mongoose.connection.collections.contacts.drop();
         console.log("Cleared the songs");
 
+        await Song.deleteMany({});
+        console.log("Cleared the songs");
+        
         const songs = await Promise.all(users.map(async ({ name, artist,spotify_url }) => {
             return await Song.create({ name, artist,spotify_url });
         }));
