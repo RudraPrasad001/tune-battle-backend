@@ -10,7 +10,7 @@ const createSongs = asyncHandler(async (req, res) => {
 
         await Song.deleteMany({});
         console.log("Cleared the songs");
-        
+
         const songs = await Promise.all(users.map(async ({ name, artist,spotify_url }) => {
             return await Song.create({ name, artist,spotify_url });
         }));
@@ -24,7 +24,10 @@ const createSongs = asyncHandler(async (req, res) => {
 const createSong = async (tracks) => {
     try {
         console.log("Received in createSong:", JSON.stringify(tracks, null, 2));
-
+        
+        await Song.deleteMany({});
+        console.log("Cleared the songs");
+        
         if (!Array.isArray(tracks) || tracks.length === 0) {
             console.error("Error: createSong received invalid data.");
             return [];
