@@ -3,13 +3,14 @@ const mongoose = require("mongoose");
 const Song = require('../schema/songs');
 const connectDb =require('../dbConnection/connect.js');
 let count = 0;
+let sessionIdd = '';
 const createSong = async (tracks,sessionId) => {
     try {
         console.log("Received in createSong:");
+        sessionIdd=sessionId;
+        await Song.deleteMany({sessionId:sessionId});
 
-        await Song.deleteMany({sessionId});
-
-        if (!Array.isArray(tracks) || tracks.length === 0) {
+        if (!Array.isArray(tracks) ) {
             console.error("Error: createSong received invalid data.");
             return [];
         }
@@ -23,27 +24,25 @@ const createSong = async (tracks,sessionId) => {
 };
 const deleteSong = asyncHandler(async (req, res) => {
     const songToDelete = await Song.findById(req.params.id);
-    const sessionId = localStorage.getItem("sessionId");
     if (!songToDelete) {
         return res.status(404).json({ message: "Song not found" });
     }
 
-    const totalSongs = await Song.countDocuments({sessionId});
+    const totalSongs = await Song.countDocuments({sessionId:sessionIdd});
     if (totalSongs === 1) {
         return res.status(400).json({ message: "Cannot delete the last song" });
     }
 
     await songToDelete.deleteOne();
 
-    const songs = await Song.find({sessionId});
+    const songs = await Song.find({sessionId:sessionIdd});
     res.json(songs);
 });
 
 const getTwoSongs = asyncHandler(async(req,res)=>{
     try{
-        const sessionId = localStorage.getItem("sessionId");
         console.log("Trying to get songs");
-        const songs = await Song.find({sessionId}).limit(2);
+        const songs = await Song.find({sessionId:sessionIdd}).limit(2);
         res.json([songs]);
     }
     catch(error){
@@ -54,12 +53,15 @@ const getTwoSongs = asyncHandler(async(req,res)=>{
 });
 const  getSongs = asyncHandler(async(req,res)=>{
     try{
+        
         console.log("Trying to get songs");
-        const songs = await Song.find({sessionId});
+        console.log(sessionIdd);
+        const songs = await Song.find({sessionId:sessionIdd});
+        console.log(songs);
         res.json([songs]);
     }
     catch(error){
-        console.log("Could not get songs");
+        console.log(error);
         res.json({"message":"Could not fetch the songs"});
     }
 });
