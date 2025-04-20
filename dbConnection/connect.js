@@ -3,7 +3,7 @@ const connectDb= async()=>{
     try{
         const connect = await mongoose.connect(process.env.CONNECTION_STRING);
         
-    await mongoose.connection.collections.contacts.drop();
+    await mongoose.connection.collections.songs.drop();
     console.log("Database cleared on server restart.");
         console.log(connect.connection.host+" success "+connect.connection.port);
     }

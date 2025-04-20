@@ -1,5 +1,5 @@
 const mongoose=require("mongoose");
-const contactSchema=mongoose.Schema({
+const songSchema=mongoose.Schema({
     name:{
         type:String,
         required:[true,"Please provide the song"]
@@ -11,10 +11,11 @@ const contactSchema=mongoose.Schema({
     spotify_url:{
         type:String,
         required:[true,"Please provide a valid  link"]
-    }
+    },
+    sessionId: String,
 },
 {
     timestamps:true,
 }
 );
-module.exports=mongoose.model("Contact",contactSchema);
+module.exports=mongoose.model("Song",songSchema);

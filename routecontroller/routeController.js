@@ -32,6 +32,7 @@ const getSpotifyAccessToken = asyncHandler(async () => {
 
 const getSongs = asyncHandler(async (req, res) => {
     const playlistId = req.params.id;
+    const sessionId = req.query.session;
     console.log(playlistId);
     const accessToken = await getSpotifyAccessToken();
 
@@ -43,21 +44,18 @@ const getSongs = asyncHandler(async (req, res) => {
         const response = await axios.get(`${SPOTIFY_PLAYLIST_URL}${playlistId}/tracks`, {
             headers: { Authorization: `Bearer ${accessToken}` },
         });
-
-        console.log("Playlist Data:", response.data);
+  console.log(sessionId);
         
         const tracks = response.data.items.map((item) => ({
             name: item.track.name,
             artist: item.track.artists.map((artist) => artist.name).join(", "),
-            spotify_url: item.track.external_urls.spotify 
+            spotify_url: item.track.external_urls.spotify,
+            sessionId:sessionId,
         }));
          count = tracks.length;
         try {
-            console.log("Tracks Extracted:", JSON.stringify(tracks, null, 2));
-            console.log("Raw Playlist Data:", JSON.stringify(response.data, null, 2));
 
-            const savedSongs = await createSong(tracks);
-            console.log("Songs Saved in DB:", savedSongs);
+            const savedSongs = await createSong(tracks,sessionId);
             console.log(count);
         } catch (e) {
             console.log(e);
